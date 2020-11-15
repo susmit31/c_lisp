@@ -40,7 +40,7 @@ int main(int argc, char** argv){
 
         //If the user has entered the exit command, break the loop
         if (!strcmp(input,"exit\n")) break;
-        
+
         printf("No you're a %s", input);
     }
     printInfo(STOP);
