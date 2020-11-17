@@ -7,7 +7,7 @@
             "args": [
                 "-g",
                 "${file}",
-                "mpc.c",
+                "D:\\projects\\c_lisp\\mpc.c",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],

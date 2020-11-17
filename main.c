@@ -18,13 +18,13 @@ char* LISPY_VERSION = "0.0.0.1";
 
 //Keeping track of programme's state, and displaying some info accordingly.
 typedef enum{
-    START,
-    STOP
+    PROGSTART,
+    PROGSTOP
 } progState;
 
 void printInfo(progState state){
     printf("\n\nLispy version %s\n", LISPY_VERSION);
-    if(state==STOP)
+    if(state==PROGSTOP)
         puts("Sayounara, senpai...\n\n");
     else puts("Welcome to Lispy.\nType \"exit\" and hit Enter to exit\n");
 }
@@ -33,7 +33,7 @@ void printInfo(progState state){
 //The main function
 int main(int argc, char** argv){
     mpc_parser_t* Number = mpc_new("number");
-    mpc_parser_t* Operator = mpc_new("opeartor");
+    mpc_parser_t* Operator = mpc_new("operator");
     mpc_parser_t* Expr = mpc_new("expr");
     mpc_parser_t* Lispy = mpc_new("lispy");
     mpca_lang(MPCA_LANG_DEFAULT, "\
@@ -44,7 +44,7 @@ int main(int argc, char** argv){
     ",
     Number, Operator, Expr, Lispy);
 
-    printInfo(START);
+    printInfo(PROGSTART);
     while(1){
         char* input = readline("lispy> ");
 
@@ -60,7 +60,7 @@ int main(int argc, char** argv){
             mpc_err_delete(r.error);
         }
     }
-    printInfo(STOP);
+    printInfo(PROGSTOP);
 
     mpc_cleanup(4, Number, Operator, Expr, Lispy);
     return 0;
