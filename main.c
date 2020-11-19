@@ -2,7 +2,6 @@
 
 //If running on Windows, keep the following lines after preprocessing
 #ifdef _WIN32
-
 static char buffer[2048];
 //Displays a prompt, reads string input and stores into the variable buffer
 //Similar to Python's input(prompt) function
@@ -22,13 +21,11 @@ typedef enum{
     PROGSTOP
 } progState;
 
-void printInfo(progState state){
-    printf("\n\nLispy version %s\n", LISPY_VERSION);
-    if(state==PROGSTOP)
-        puts("Sayounara, senpai...\n\n");
-    else puts("Welcome to Lispy.\nType \"exit\" and hit Enter to exit\n");
-}
+void printInfo(progState state);
 
+//Evaluate parsed expression
+long eval(mpc_ast_t* tree);
+long eval_op(long x, char* op, long y);
 
 //The main function
 int main(int argc, char** argv){
@@ -55,7 +52,8 @@ int main(int argc, char** argv){
 
         mpc_result_t r;
         if (mpc_parse("<stdin>", input, Lispy, &r)){
-            mpc_ast_print(r.output);
+            long result = eval(r.output);
+            printf("%d\n", result);
             mpc_ast_delete(r.output);
         } else{
             mpc_err_print(r.error);
@@ -66,4 +64,35 @@ int main(int argc, char** argv){
 
     mpc_cleanup(4, Number, Operator, Expr, Lispy);
     return 0;
+}
+
+void printInfo(progState state){
+    printf("\n\nLispy version %s\n", LISPY_VERSION);
+    if(state==PROGSTOP)
+        puts("Sayounara, senpai...\n\n");
+    else puts("Welcome to Lispy.\nType \"exit\" and hit Enter to exit\n");
+}
+
+long eval(mpc_ast_t* t){
+    if(strstr(t->tag, "number")){
+        return atoi(t->contents);
+    }
+
+    char* op = t->children[1]->contents;
+    
+    long x = eval(t->children[2]);
+
+    int i=3;
+    while(strstr(t->children[i]->tag, "expr")){
+        x = eval_op(x,op,eval(t->children[i]));
+        i++;
+    }
+    return x;
+}
+
+long eval_op(long x, char* op, long y){
+    if(strcmp(op, "+") == 0) return x+y;
+    else if(strcmp(op, "-")==0) return x-y;
+    else if(strcmp(op,"*")==0) return x*y;
+    else if(strcmp(op, "/")==0) return x/y;
 }
